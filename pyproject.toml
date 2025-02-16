@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "langbench"
+version = "0.0.0"
+description = ""
+authors = ["ameen-91 <mohammedameen9011@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
