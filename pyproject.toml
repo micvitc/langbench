@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "langbench"
-version = "0.0.1"
+version = "0.0.2"
 description = "A benchmarking tool for langchain based LLM pipelines."
 authors = ["ameen-91 <mohammedameen9011@gmail.com>"]
 license = "MIT"
