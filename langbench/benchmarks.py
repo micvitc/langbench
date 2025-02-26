@@ -6,14 +6,7 @@ This module provides an Evaluator class to run evaluations with various metrics.
 """
 
 import time
-import logging
-
-
-from tqdm import tqdm
-
-logger = logging.getLogger(__name__)
-
-tqdm.pandas()
+from rich.progress import Progress
 
 
 class Evaluator:
@@ -63,7 +56,7 @@ class Evaluator:
         Returns:
             str: The output content from the pipeline's processing.
         """
-        return self.pipeline(text).content
+        return self.pipeline.invoke(text).content
 
     def execute(self, data):
         """
@@ -72,16 +65,18 @@ class Evaluator:
         Args:
             data (DataFrame): A pandas DataFrame containing the 'input' column.
         """
+        outputs = []
         latencies = []
-
-        def pipeline_with_latency(text):
-            start_time = time.time()
-            output = self.call_pipeline(text)
-            end_time = time.time()
-            latencies.append(end_time - start_time)
-            return output
-
-        data["output"] = data["input"].progress_map(pipeline_with_latency)
+        with Progress() as progress:
+            task = progress.add_task("Calculating latency...", total=len(data["input"]))
+            for text in data["input"]:
+                start_time = time.time()
+                output = self.call_pipeline(text)
+                end_time = time.time()
+                outputs.append(output)
+                latencies.append(end_time - start_time)
+                progress.update(task, advance=1)
+        data["output"] = outputs
         data["latency"] = latencies
 
     def evaluate(self, input_data):
@@ -99,7 +94,5 @@ class Evaluator:
             self.execute(data)
         for metric in self.metrics:
             m = metric()
-            tqdm.write(f"Evaluating {m.name}")
             m.run(data)
-            tqdm.write(f"Finished evaluating {m.name}")
         return data
