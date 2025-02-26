@@ -93,6 +93,53 @@ class Evaluator:
         if self.online:
             self.execute(data)
         for metric in self.metrics:
-            m = metric()
-            m.run(data)
+            metric.run(data)
+        self.generate_report(data)
         return data
+
+    def generate_report(self, data):
+        """
+        Generates an HTML report of evaluation metrics using Plotly box plots.
+        The report is saved as 'report.html' in the current directory.
+
+        Args:
+            data (DataFrame): The evaluated DataFrame containing metrics.
+
+        Returns:
+            str: An HTML string containing the report with embedded Plotly graphs.
+        """
+        import plotly.express as px
+        import plotly.io as pio
+
+        # Identify metric columns that are not standard columns
+        exclude = ["input", "output", "latency"]
+        metric_columns = [col for col in data.columns if col not in exclude]
+
+        html_parts = []
+        # Use a box plot for latency if it is present
+        if "latency" in data.columns:
+            fig_latency = px.box(
+                data, y="latency", points="all", title="Latency Distribution"
+            )
+            html_parts.append(
+                pio.to_html(fig_latency, full_html=False, include_plotlyjs="cdn")
+            )
+
+        # Use a box plot for each metric column
+        for col in metric_columns:
+            fig = px.box(data, y=col, points="all", title=f"{col} Distribution")
+            # Only include plotlyjs once in the report
+            include_plotlyjs = None if html_parts else "cdn"
+            html_parts.append(
+                pio.to_html(fig, full_html=False, include_plotlyjs=include_plotlyjs)
+            )
+
+        html_report = "<html><head><title>Benchmark Report</title></head><body>"
+        for part in html_parts:
+            html_report += part
+        html_report += "</body></html>"
+
+        with open("report.html", "w") as f:
+            f.write(html_report)
+
+        return html_report

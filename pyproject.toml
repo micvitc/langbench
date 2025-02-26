@@ -1,15 +1,15 @@
 [tool.poetry]
 name = "langbench"
-version = "0.0.0"
+version = "0.0.1"
 description = ""
 authors = ["ameen-91 <mohammedameen9011@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.10"
 typer = "^0.15.1"
-numpy = "^2.2.3"
+numpy = ">=1.26.4,<2"   # downgraded numpy to a version compatible with langchain
 pyyaml = "^6.0.2"
 langchain = "^0.3.18"
 transformers = "^4.48.3"
@@ -21,9 +21,10 @@ ipykernel = "^6.29.5"
 ipywidgets = "^8.1.5"
 langchain-openai = "^0.3.6"
 
-
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
+mkdocstrings = {extras = ["python"], version = "^0.28.2"}
+mkdocs-material = {extras = ["imaging"], version = "^9.6.5"}
 
 [tool.poetry.scripts]
 langbench = "langbench.cli:app"
