@@ -170,5 +170,5 @@ cython_debug/
 .pypirc
 
 private/
-config.bat
 node_modules
+config.bat
