@@ -171,4 +171,4 @@ cython_debug/
 
 private/
 node_modules
-config.bat
+.env
